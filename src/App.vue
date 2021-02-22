@@ -1,15 +1,6 @@
 <template>
   <div id="app">
     <div class="content">
-      <ul class="router_ul">
-        <router-link
-          v-for="link in links"
-          :key="link.to"
-          tag="li"
-          active-class="activeClass"
-          :to="link.to"
-        >{{ link.title }}</router-link>
-      </ul>
       <router-view></router-view>
     </div>
   </div>
@@ -21,11 +12,7 @@ export default {
   components: {},
   data() {
     return {
-      links: [
-        { to: '/properties-panel-extension', title: 'properties-panel-extension' },
-        { to: '/custom-properties-panel', title: 'custom-properties-panel' },
-        { to: '/custom-color', title: 'custom-color' }
-      ]
+
     }
   }
 }
