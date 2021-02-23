@@ -126,7 +126,7 @@
                         result += ageCondition;
                     }
                     if (ageCondition && ageCondition.length && sexCondition && sexCondition.length) {
-                        result += (" && $user.sex=" + sexCondition);
+                        result += (" && $user.sex==" + sexCondition);
                     }
                     if (sexCondition && sexCondition.length && nutritionCondition && nutritionCondition.length) {
                         result += (" && " + nutritionCondition);
