@@ -13,6 +13,7 @@
     import PropertiesView from './custom-properties-panel/PropertiesView'
     import customModule from './custom/index'
     import {xmlStr} from '../mock/xmlStr'
+    import {options} from "../assets/js/condition";
 
     export default {
         name: '',
@@ -73,36 +74,35 @@
                 console.log("linked map ", linkedMap);
                 let result = [];
                 this.dfs(linkedMap, result, [], startNode.getAttribute("id"));
-                console.log(gateWayAttribute);
-                console.log(result);
-                let script = this.generateDrlScript("test", result, gateWayAttribute, taskAttribute);
+                let scripts = this.generateDrlScript("test", result, gateWayAttribute, taskAttribute);
             },
             generateDrlScript(ruleName, graph, gateWayAttribute, taskAttribute) {
-                let drlStr = "rule" + "\"" + ruleName + "\"\nwhen\n$user:User(";
+                let drlStr = "package droolRule\nimport com.lzm.health.constant.Sex;\n" +
+                    "import com.lzm.health.model.User;\nrule" + "\"" + ruleName + "\"\nwhen\n$user:User(";
                 let result = [];
                 console.log(graph);
                 for (let i = 0; i < graph.length; ++i) {
                     let item = new String(drlStr);
                     item += this.generateConditions(graph[i], gateWayAttribute, taskAttribute);
-                    console.log(item);
                     result.push(item);
+                    console.log(item);
                 }
                 return result;
             },
             replaceXml(str) {
-
-                str = str.replace(",", "&&")
-                    .replace("&#38;&#38;", "&&")
-                    .replace("&#62;", ">")
-                    .replace("&#60;", "<");
+                str = str.replace(/,/g, "&&")
+                    .replace(/&#38;&#38;/g, "&&")
+                    .replace(/&#62;/g, ">")
+                    .replace(/&#60;/g, "<")
+                    .replace(/User/g, "$user");
                 return str;
             },
             generateConditions(edges, gateWayAttribute, taskAttribute) {
+                console.log(gateWayAttribute, taskAttribute);
                 let result = "";
                 console.log("edges " + edges)
                 for (let i = 1; i < edges.length - 2; ++i) {
                     let key = edges[i] + "," + edges[i + 1];
-                    console.log("key is " + key);
                     let val = gateWayAttribute.get(key);
                     let ageCondition = val.getAttribute("conditionAge");
                     if (ageCondition) {
@@ -114,19 +114,26 @@
                     }
                     let nutritionCondition = val.getAttribute("conditionNutrition");
                     if (nutritionCondition) {
+                        for (let option of options) {
+                            nutritionCondition = nutritionCondition.replace(option.label + ",", "");
+                        }
+                        nutritionCondition = nutritionCondition.replace(",", " , ");
+                    }
+                    if (nutritionCondition) {
                         nutritionCondition = this.replaceXml(nutritionCondition);
                     }
                     if (ageCondition) {
                         result += ageCondition;
                     }
                     if (ageCondition && ageCondition.length && sexCondition && sexCondition.length) {
-                        result += (" && " + sexCondition);
+                        result += (" && $user.sex=" + sexCondition);
                     }
                     if (sexCondition && sexCondition.length && nutritionCondition && nutritionCondition.length) {
                         result += (" && " + nutritionCondition);
                     }
                 }
-                result += ")\nthen\n$user.setFoods(\"" + taskAttribute.get(edges[edges.length - 1]).getAttribute("foods") + "\")";
+                result += ")\nthen\n$user.setFoods(\"" + taskAttribute.get(edges[edges.length - 1]).getAttribute("foodIdxs") + "\");\nend";
+                //result = result("User", "$user");
                 return result;
             },
             dfs(linkedMap, result, tmp, current) {

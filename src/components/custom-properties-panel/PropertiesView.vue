@@ -101,20 +101,17 @@
                 for (let i = 0; i < val.length; ++i) {
                     element.selectedData.push(this.foods[val[i]]);
                 }
-                this.changeField(null, "foods", val);
+                this.changeField(null, "foods", element.selectedData);
+                this.changeField(null, "foodIdxs", val);
                 console.log('已选中：', val)
             },
             onConditionChange(element) {
+                console.log("condition change ", element);
                 let name = (element.sex ? "性别判定" : "") + (element.age ? " 年龄判定" : "") + " 判定元素:";
-                for (let i = 0; i < element.conditions.length; ++i) {
-                    name += element.conditions[i][0] + ",";
-                }
                 this.changeField(null, "name", name);
                 this.changeField(null, "conditionAge", element.age);
                 this.changeField(null, "conditionSex", element.sex);
-                this.changeField(null, "conditionNutrition", element.conditions.map((item) => {
-                    return item[1];
-                }));
+                this.changeField(null, "conditionNutrition", element.conditions);
             },
             clear() {
                 let classes = [
@@ -133,12 +130,32 @@
                 modeler.on('selection.changed', e => {
                     this.selectedElements = e.newSelection
                     this.element = e.newSelection[0];
-                    if (this.element && !this.element.selectedData) {
-                        this.element.selectedData = [];
+                    console.log("element changed", this.element);
+                    if (this.element) {
+                        if (!this.element.sex && this.element.businessObject.$attrs.conditionSex) {
+                            this.element.sex = this.element.businessObject.$attrs.conditionSex;
+                        }
+                        if (!this.element.age && this.element.businessObject.$attrs.conditionAge) {
+                            this.element.age = this.element.businessObject.$attrs.conditionAge;
+                        }
+                        if (!this.element.conditions && this.element.businessObject.$attrs.conditionNutrition) {
+                            this.element.conditions = this.element.businessObject.$attrs.conditionNutrition.
+                            replace("&&", "&#38;&#38;").
+                            replace(">", "&#62;").
+                            replace("<", "&#60;");
+                        }
+                        if (!this.element.selectedData && this.element.businessObject.$attrs.foodIdxs) {
+                            let indexs = this.element.businessObject.$attrs.foodIdxs.split(",");
+                            let objects = [];
+                            for (let index of indexs) {
+                                objects.push(foodNames[parseInt(index) - 1]);
+                            }
+                            this.element.selectedData = objects;
+                        }
                     }
-                    this.setDefaultProperties()
+                    this.setDefaultProperties();
                     this.clear()
-                })
+                });
                 modeler.on('element.changed', e => {
                     const {element} = e
                     const {element: currentElement} = this
