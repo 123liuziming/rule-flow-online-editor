@@ -5,7 +5,8 @@ Vue.use(Router)
 
 const routes = [{
     path: '/',
-    redirect: '/custom-properties-panel'
+    component: () =>
+        import ('./../components/Index')
 }, {
         path: '/custom-properties-panel',
         component: () =>

@@ -74,18 +74,24 @@
                 console.log("linked map ", linkedMap);
                 let result = [];
                 this.dfs(linkedMap, result, [], startNode.getAttribute("id"));
-                let scripts = this.generateDrlScript("test", result, gateWayAttribute, taskAttribute);
+                let script = this.generateDrlScript("test", result, gateWayAttribute, taskAttribute);
+                let data = new FormData();
+                data.append('droolStr',script);
+                data.append('id',"test");
+                data.append("xml", this.xml);
+                this.$axios.post(`drools/drl/upload`,data)
+                    .then(res=>{
+                        alert("success")
+                    })
             },
+
             generateDrlScript(ruleName, graph, gateWayAttribute, taskAttribute) {
                 let drlStr = "package droolRule\nimport com.lzm.health.constant.Sex;\n" +
-                    "import com.lzm.health.model.User;\nrule" + "\"" + ruleName + "\"\nwhen\n$user:User(";
-                let result = [];
+                    "import com.lzm.health.model.User;\n";
                 console.log(graph);
+                let result = new String(drlStr);
                 for (let i = 0; i < graph.length; ++i) {
-                    let item = new String(drlStr);
-                    item += this.generateConditions(graph[i], gateWayAttribute, taskAttribute);
-                    result.push(item);
-                    console.log(item);
+                    result += this.generateConditions(graph[i], gateWayAttribute, taskAttribute, ruleName + i);
                 }
                 return result;
             },
@@ -97,9 +103,9 @@
                     .replace(/User/g, "$user");
                 return str;
             },
-            generateConditions(edges, gateWayAttribute, taskAttribute) {
+            generateConditions(edges, gateWayAttribute, taskAttribute, ruleName) {
                 console.log(gateWayAttribute, taskAttribute);
-                let result = "";
+                let result = "rule" + "\"" + ruleName + "\"\nwhen\n$user:User(";
                 console.log("edges " + edges)
                 for (let i = 1; i < edges.length - 2; ++i) {
                     let key = edges[i] + "," + edges[i + 1];
@@ -132,7 +138,7 @@
                         result += (" && " + nutritionCondition);
                     }
                 }
-                result += ")\nthen\n$user.setFoods(\"" + taskAttribute.get(edges[edges.length - 1]).getAttribute("foodIdxs") + "\");\nend";
+                result += ")\nthen\n$user.setFoods(\"" + taskAttribute.get(edges[edges.length - 1]).getAttribute("foodIdxs") + "\");\nend\n";
                 //result = result("User", "$user");
                 return result;
             },
