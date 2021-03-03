@@ -12,7 +12,6 @@
     import BpmnModeler from 'bpmn-js/lib/Modeler'
     import PropertiesView from './custom-properties-panel/PropertiesView'
     import customModule from './custom/index'
-    import {xmlStr} from '../mock/xmlStr'
     import {options} from "../assets/js/condition";
 
     export default {
@@ -189,12 +188,12 @@
             },
             createNewDiagram() {
                 // 将字符串转换成图显示出来
-                this.bpmnModeler.importXML(xmlStr, err => {
+                this.bpmnModeler.importXML(this.xmlStr.xmlStr, err => {
                     if (err) {
                         // console.error(err)
                     } else {
                         // 这里是成功之后的回调, 可以在这里做一系列事情
-                        this.xml = xmlStr;
+                        this.xml = this.xmlStr.xmlStr;
                         this.success();
                     }
                 })
