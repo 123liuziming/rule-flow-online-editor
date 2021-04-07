@@ -106,9 +106,10 @@
                 console.log(gateWayAttribute, taskAttribute);
                 let result = "rule" + "\"" + ruleName + "\"\nwhen\n$user:User(";
                 console.log("edges " + edges)
-                for (let i = 1; i < edges.length - 2; ++i) {
+                for (let i = 1; i < edges.length - 1; ++i) {
                     let key = edges[i] + "," + edges[i + 1];
                     let val = gateWayAttribute.get(key);
+                    console.log("val is " + val);
                     let ageCondition = val.getAttribute("conditionAge");
                     if (ageCondition) {
                         ageCondition = this.replaceXml(ageCondition)
@@ -203,6 +204,7 @@
                 const that = this
                 this.bpmnModeler.on('commandStack.changed', function () {
                     that.saveDiagram(function (err, xml) {
+                        console.log(xml);
                         that.xml = xml;
                         let edits = document.getElementsByClassName('djs-direct-editing-content')
                         for (let i = 0; i < edits.length; ++i) {

@@ -5,7 +5,6 @@
         <div v-else>
             <fieldset class="element-item">
                 <label>id</label>
-                <span>{{ element.id }}</span>
             </fieldset>
             <fieldset class="element-item">
                 <label>name</label>
@@ -14,18 +13,14 @@
             <fieldset class="element-item" v-if="element.type === 'bpmn:Task'">
                 <label>食物列表</label>
                 <kr-paging
-                        ref="paging"
                         :dataList="foods"
                         :selectedData="element.selectedData"
                         :pageSize="100"
-                        :filterable="true"
-                        :isHighlight="true"
-                        :showClearBtn="true"
                         @onChange="onChange($event, element)"
                 ></kr-paging>
             </fieldset>
             <fieldset class="element-item"
-                      v-if="element.type === 'bpmn:SequenceFlow' && element.businessObject.sourceRef.$type === 'bpmn:ExclusiveGateway' && element.businessObject.targetRef.$type === 'bpmn:ExclusiveGateway'">
+                      v-if="element.type === 'bpmn:SequenceFlow' && element.businessObject.sourceRef.$type === 'bpmn:ExclusiveGateway'">
                 <label>营养元素判定</label>
                 <el-cascader
                         @change="onConditionChange(element)"
@@ -97,13 +92,15 @@
 
         methods: {
             onChange(val, element) {
-                element.selectedData.length = 0;
+                console.log(element);
+                element.selectedData = []
                 for (let i = 0; i < val.length; ++i) {
-                    element.selectedData.push(this.foods[val[i]]);
+                    element.selectedData.push(this.foods[val[i] - 1]);
                 }
                 this.changeField(null, "foods", element.selectedData);
                 this.changeField(null, "foodIdxs", val);
                 console.log('已选中：', val)
+                console.log(element);
             },
             onConditionChange(element) {
                 console.log("condition change ", element);
@@ -152,9 +149,9 @@
                             }
                             this.element.selectedData = objects;
                         }
+                        this.setDefaultProperties();
+                        this.clear();
                     }
-                    this.setDefaultProperties();
-                    this.clear()
                 });
                 modeler.on('element.changed', e => {
                     const {element} = e
@@ -166,7 +163,7 @@
                     if (element.id === currentElement.id) {
                         this.element = element
                     }
-                    this.clear()
+                    this.clear();
                 })
             },
             setDefaultProperties() {
