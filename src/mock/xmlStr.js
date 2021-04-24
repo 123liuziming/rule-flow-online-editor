@@ -3,43 +3,6 @@ export default {xmlStr : `
    <?xml version="1.0" encoding="UTF-8"?>
 <definitions xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:omgdi="http://www.omg.org/spec/DD/20100524/DI" xmlns:omgdc="http://www.omg.org/spec/DD/20100524/DC" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" id="sid-38422fae-e03e-43a3-bef4-bd33b32041b2" targetNamespace="http://bpmn.io/bpmn" exporter="bpmn-js (https://demo.bpmn.io)" exporterVersion="5.1.2">
   <process id="Process_1" isExecutable="false">
-    <startEvent id="StartEvent_1y45yut" name="开始">
-      <outgoing>SequenceFlow_1k8r5d8</outgoing>
-    </startEvent>
-    <exclusiveGateway id="ExclusiveGateway_1efrt3x">
-      <incoming>SequenceFlow_1k8r5d8</incoming>
-      <outgoing>SequenceFlow_09zmw44</outgoing>
-      <outgoing>SequenceFlow_02y9kct</outgoing>
-    </exclusiveGateway>
-    <exclusiveGateway id="ExclusiveGateway_0zqj6zo">
-      <incoming>SequenceFlow_09zmw44</incoming>
-      <outgoing>SequenceFlow_1gvnxw2</outgoing>
-      <outgoing>SequenceFlow_0jvxdm7</outgoing>
-    </exclusiveGateway>
-    <exclusiveGateway id="ExclusiveGateway_0y2ztfz">
-      <incoming>SequenceFlow_02y9kct</incoming>
-      <outgoing>SequenceFlow_0nqx5bg</outgoing>
-      <outgoing>SequenceFlow_0we4f62</outgoing>
-    </exclusiveGateway>
-    <sequenceFlow id="SequenceFlow_1k8r5d8" sourceRef="StartEvent_1y45yut" targetRef="ExclusiveGateway_1efrt3x" />
-    <sequenceFlow id="SequenceFlow_09zmw44" name="性别判定 判定元素:" sourceRef="ExclusiveGateway_1efrt3x" targetRef="ExclusiveGateway_0zqj6zo" conditionSex="Sex.MALE" />
-    <sequenceFlow id="SequenceFlow_02y9kct" name="性别判定 判定元素:" sourceRef="ExclusiveGateway_1efrt3x" targetRef="ExclusiveGateway_0y2ztfz" conditionSex="Sex.FEMALE" />
-    <task id="Task_17gbcq4" foods="[object Object],[object Object]" foodIdxs="4,5">
-      <incoming>SequenceFlow_1gvnxw2</incoming>
-    </task>
-    <task id="Task_1t56fdr" foods="[object Object]" foodIdxs="72">
-      <incoming>SequenceFlow_0jvxdm7</incoming>
-    </task>
-    <task id="Task_1p68mh2" foods="[object Object]" foodIdxs="99">
-      <incoming>SequenceFlow_0nqx5bg</incoming>
-    </task>
-    <task id="Task_0pn09o9" foods="[object Object]" foodIdxs="100">
-      <incoming>SequenceFlow_0we4f62</incoming>
-    </task>
-    <sequenceFlow id="SequenceFlow_1gvnxw2" name=" 年龄判定 判定元素:" sourceRef="ExclusiveGateway_0zqj6zo" targetRef="Task_17gbcq4" conditionNutrition="水,User.water &#62; 50 &#38;&#38; User.water &#60; 80" conditionAge="User.age &#38;#62; 18" />
-    <sequenceFlow id="SequenceFlow_0jvxdm7" name=" 年龄判定 判定元素:" sourceRef="ExclusiveGateway_0zqj6zo" targetRef="Task_1t56fdr" conditionNutrition="水,User.water &#60; 10" conditionAge="User.age &#38;#62; 1 &#38;#38;&#38;#38; User.age &#38;#60; 2" />
-    <sequenceFlow id="SequenceFlow_0nqx5bg" name=" 年龄判定 判定元素:" sourceRef="ExclusiveGateway_0y2ztfz" targetRef="Task_1p68mh2" conditionNutrition="水,User.water &#60; 10" conditionAge="User.age &#38;#62; 2 &#38;#38;&#38;#38; User.age &#38;#60; 3" />
-    <sequenceFlow id="SequenceFlow_0we4f62" name=" 年龄判定 判定元素:" sourceRef="ExclusiveGateway_0y2ztfz" targetRef="Task_0pn09o9" conditionNutrition="水,User.water &#60; 10" conditionAge="User.age &#38;#62; 3 &#38;#38;&#38;#38; User.age &#38;#60; 4" />
   </process>
   <bpmndi:BPMNDiagram id="BpmnDiagram_1">
     <bpmndi:BPMNPlane id="BpmnPlane_1" bpmnElement="Process_1">

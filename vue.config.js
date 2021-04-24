@@ -15,7 +15,7 @@ module.exports = {
                 }
             },
             '/drools': {
-                target: 'http://47.93.42.104:8084',  //这里后台的地址模拟的;应该填写你们真实的后台接口
+                target: 'http://localhost:8084',  //这里后台的地址模拟的;应该填写你们真实的后台接口
                 ws: true,
                 changOrigin: true,  //允许跨域
                 pathRewrite: {

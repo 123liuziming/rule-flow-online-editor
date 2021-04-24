@@ -13,17 +13,17 @@ import BpmnModeler from 'bpmn-js/lib/Modeler'
 import PropertiesView from './custom-properties-panel/PropertiesView'
 import customModule from './custom/index'
 import {options} from "../assets/js/condition";
-
+import state from "../assets/js/MyStorage"
 export default {
   name: '',
   components: {
     PropertiesView
   },
-  // 生命周期 - 创建完成（可以访问当前this实例）
-  created() {
-  },
   // 生命周期 - 载入后, Vue 实例挂载到实际的 DOM 操作完成，一般在该过程进行 Ajax 交互
   mounted() {
+    if (!state.getItem("login")) {
+      this.exit();
+    }
     this.init();
     this.clear();
   },
@@ -34,10 +34,15 @@ export default {
       container: null,
       canvas: null,
       xml: "",
+      ruleName: ""
     }
   },
   // 方法集合
   methods: {
+    exit() {
+      state.clear();
+      this.$router.push('/');
+    },
     uploadDrl() {
       console.log("xml");
       console.log(this.xml);
@@ -73,11 +78,13 @@ export default {
       console.log("linked map ", linkedMap);
       let result = [];
       this.dfs(linkedMap, result, [], startNode.getAttribute("id"));
-      let script = this.generateDrlScript("test", result, gateWayAttribute, taskAttribute);
+      let ruleName = this.ruleName = this.$route.query.ruleName;
+      let script = this.generateDrlScript(ruleName, result, gateWayAttribute, taskAttribute);
       let data = new FormData();
       data.append('droolStr', script);
-      data.append('id', "test");
+      data.append('id', ruleName);
       data.append("xml", this.xml);
+      data.append("account", state.getItem("login"));
       this.$axios.post(`drools/drl/upload`, data)
           .then(res => {
             alert("success")
@@ -172,6 +179,7 @@ export default {
         'bpmn-icon-group',
         'bpmn-icon-data-store',
         'bpmn-icon-intermediate-event-none',
+        'bpmn-icon-end-event-none'
       ];
       for (let i = 0; i < classes.length; ++i) {
         let x = document.getElementsByClassName(classes[i]);

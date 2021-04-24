@@ -6,12 +6,17 @@ Vue.use(Router)
 const routes = [{
     path: '/',
     component: () =>
-        import ('./../components/Index')
+        import ('./../components/Login')
 }, {
-        path: '/custom-properties-panel',
+        path: '/Editor',
         component: () =>
             import ('./../components/custom-properties-panel')
     },
+    {
+        path: '/Index',
+        component: () =>
+            import ('./../components/Index')
+    }
 ]
 
 export default new Router({
