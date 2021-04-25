@@ -1,8 +1,9 @@
 <template>
   <div class="content">
     <h2>规则列表</h2>
-    <el-card shadow="always" v-for="item in items" :key="item.name">
-      <div @click="editRules(item)">{{ item.name.split("_")[1] }}</div>
+    <el-card shadow="always" v-for="item in items" :key="item.name" style="margin-top: 10px; text-align: center;">
+      <span @click="editRules(item)"><b>{{ item.name.split("_")[1] }}</b></span>
+      <el-button @click="deleteRule(item)" style="float: right;" size="mini" type="danger" icon="el-icon-delete"></el-button>
     </el-card>
     <el-button class="select_top_button" type="danger" @click="exit">退出系统</el-button>
     <el-button class="select_left_button" @click="addRules">添加规则</el-button>
@@ -47,6 +48,23 @@ export default {
     }
   },
   methods: {
+    deleteRule(item) {
+      let data = new FormData();
+      data.append('id', item.name);
+      this.$axios.post(`drools/drl/delete`, data).then(res => {
+          if (res.data) {
+            let index = this.items.indexOf(item)
+            if (index !== -1) {
+              this.items.splice(index, 1)
+            }
+            this.$notify({
+              title: '成功',
+              message: '成功删除规则',
+              type: 'success'
+            });
+          }
+      })
+    },
     addRules() {
       this.dialogFormVisible = true;
     },

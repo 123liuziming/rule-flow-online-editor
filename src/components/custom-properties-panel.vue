@@ -2,7 +2,10 @@
   <div class="containers" ref="content">
     <div class="canvas" ref="canvas"></div>
     <properties-view v-if="bpmnModeler" :modeler="bpmnModeler"></properties-view>
-    <el-button @click="uploadDrl">上传</el-button>
+    <div style="text-align: center">
+      <el-button @click="uploadDrl">上传</el-button>
+    </div>
+    <el-button class="select_top_button" type="danger" @click="exit">退出系统</el-button>
   </div>
 </template>
 
@@ -13,6 +16,7 @@ import BpmnModeler from 'bpmn-js/lib/Modeler'
 import PropertiesView from './custom-properties-panel/PropertiesView'
 import {options} from "../assets/js/condition";
 import state from "../assets/js/MyStorage"
+
 export default {
   name: '',
   components: {
@@ -84,10 +88,13 @@ export default {
       data.append('id', ruleName);
       data.append("xml", this.xml);
       data.append("account", state.getItem("login"));
-      this.$axios.post(`drools/drl/upload`, data)
-          .then(res => {
-            alert("success")
-          })
+      this.$axios.post(`drools/drl/upload`, data).then(res => {
+        this.$notify({
+          title: '成功',
+          message: '成功添加规则',
+          type: 'success'
+        });
+      })
     },
 
     generateDrlScript(ruleName, graph, gateWayAttribute, taskAttribute) {
@@ -277,5 +284,12 @@ export default {
   right: 0;
   top: 0;
   width: 300px;
+}
+
+.select_top_button {
+  position: fixed; /*固定位置*/
+  z-index: 99; /*设置优先级显示，保证不会被覆盖*/
+  right: 5px;
+  bottom: 5px;
 }
 </style>
