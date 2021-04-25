@@ -14,50 +14,6 @@ const ages = [
     {value: "User.age &#62; 18", label: "18~"},
 ];
 
-const options = [
-    {
-        value: '水',
-        label: '水',
-        children: [{
-            value: 'User.water &#60; 10',
-            label: '10',
-        }, {
-            value: 'User.water &#62; 10 &#38;&#38; User.water &#60; 50',
-            label: '50',
-        }, {
-            value: 'User.water &#62; 50 &#38;&#38; User.water &#60; 80',
-            label: '80',
-        }]
-    },
-    {
-        value: '蛋白质',
-        label: '蛋白质',
-        children: [{
-            value: 'User.protein &#60; 10',
-            label: '10',
-        }, {
-            value: 'User.protein &#62; 10 &#38;&#38; User.protein &#60; 50',
-            label: '50',
-        }, {
-            value: 'User.protein &#62; 50 &#38;&#38; User.protein &#60; 80',
-            label: '80',
-        }]
-    },
-    {
-        value: '脂肪',
-        label: '脂肪',
-        children: [{
-            value: 'User.fat &#60; 10',
-            label: '10',
-        }, {
-            value: 'User.fat &#62; 10 &#38;&#38; User.fat &#60; 50',
-            label: '50',
-        }, {
-            value: 'User.fat &#62; 50 &#38;&#38; User.fat &#60; 80',
-            label: '80',
-        }]
-    }
-];
 
 const foodNames = [
     {
@@ -43067,6 +43023,81 @@ const foodNames = [
     {
         "id": 10752,
         "label": "苹果鹌鹑"
+    }
+];
+
+const options = [
+    {
+        value: 'water',
+        label: '水'
+    },
+    {
+        value: 'protein',
+        label: '蛋白质'
+    },
+    {
+        value: 'fat',
+        label: '脂肪'
+    },
+    {
+        value: 'carbohydrate',
+        label: '碳水化合物'
+    },
+    {
+        value: 'heat',
+        label: '热量'
+    },
+    {
+        value: 'fiber',
+        label: '纤维'
+    },
+    {
+        value: 'k',
+        label: '钾'
+    },
+    {
+        value: 'na',
+        label: '钠'
+    },
+    {
+        value: 'mg',
+        label: '镁'
+    },
+    {
+        value: 'ca',
+        label: '钙'
+    },
+    {
+        value: 'p',
+        label: '磷'
+    },
+    {
+        value: 'fe',
+        label: '铁'
+    },
+    {
+        value: 'zn',
+        label: '锌'
+    },
+    {
+        value: 'cu',
+        label: '铜'
+    },
+    {
+        value: 'mn',
+        label: '锰'
+    },
+    {
+        value: 'se',
+        label: '硒'
+    },
+    {
+        value: 'va',
+        label: '维生素A'
+    },
+    {
+        value: 've',
+        label: '维生素E'
     }
 ];
 

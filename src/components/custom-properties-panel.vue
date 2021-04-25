@@ -11,7 +11,6 @@
 // import BpmnViewer from 'bpmn-js'
 import BpmnModeler from 'bpmn-js/lib/Modeler'
 import PropertiesView from './custom-properties-panel/PropertiesView'
-import customModule from './custom/index'
 import {options} from "../assets/js/condition";
 import state from "../assets/js/MyStorage"
 export default {
@@ -97,16 +96,16 @@ export default {
       console.log(graph);
       let result = new String(drlStr);
       for (let i = 0; i < graph.length; ++i) {
-        result += this.generateConditions(graph[i], gateWayAttribute, taskAttribute, ruleName + i);
+        result += this.generateConditions(graph[i], gateWayAttribute, taskAttribute, state.getItem("login") + "_" + ruleName + "_" + i);
       }
       return result;
     },
     replaceXml(str) {
-      str = str.replace(/,/g, "&&")
-          .replace(/&#38;&#38;/g, "&&")
-          .replace(/&#62;/g, ">")
-          .replace(/&#60;/g, "<")
-          .replace(/User/g, "$user");
+      str = str.replaceAll(/,/g, "&&")
+          .replaceAll(/&#38;&#38;/g, "&&")
+          .replaceAll(/&#62;/g, ">")
+          .replaceAll(/&#60;/g, "<")
+          .replaceAll(/User/g, "$user");
       return str;
     },
     generateConditions(edges, gateWayAttribute, taskAttribute, ruleName) {
@@ -124,15 +123,38 @@ export default {
         if (sexCondition) {
           sexCondition = this.replaceXml(sexCondition);
         }
-        let nutritionCondition = val.getAttribute("conditionNutrition");
-        if (nutritionCondition) {
-          for (let option of options) {
-            nutritionCondition = nutritionCondition.replace(option.label + ",", "");
+        try {
+          var conditionJson = JSON.parse(val.getAttribute("conditionNutrition").replaceAll("&#34;", ""));
+        } catch (e) {
+          conditionJson = null;
+        }
+        let nutritionCondition = "";
+        if (conditionJson) {
+          for (let condition of conditionJson) {
+            let nutrition = condition["nutrition"];
+            if (nutrition === "") {
+              continue;
+            }
+            let left = condition["left"];
+            let right = condition["right"];
+            if (left === '-INF' && right === 'INF') {
+              continue;
+            }
+            if (left !== "-INF") {
+              nutritionCondition += ("$user." + nutrition)
+              nutritionCondition += (" >= " + left + " && ");
+            }
+            if (right !== "INF") {
+              nutritionCondition += ("$user." + nutrition)
+              nutritionCondition += (" <= " + right + " && ");
+            }
           }
-          nutritionCondition = nutritionCondition.replace(",", " , ");
         }
         if (nutritionCondition) {
           nutritionCondition = this.replaceXml(nutritionCondition);
+          if (nutritionCondition.endsWith(" && ")) {
+            nutritionCondition = nutritionCondition.slice(0, -4);
+          }
         }
         if (ageCondition) {
           result += (ageCondition + " && ");
