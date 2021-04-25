@@ -43101,8 +43101,112 @@ const options = [
     }
 ];
 
+const bioOptions = [
+    {
+        value: 'RBC',
+        label: '红细胞(L)'
+    },
+    {
+        value: 'Hb',
+        label: '血红蛋白(g/L)'
+    },
+    {
+        value: 'HCT',
+        label: '血细胞比容(%)'
+    },
+    {
+        value: 'MCV',
+        label: '平均红细胞容积(fl)'
+    },
+    {
+        value: 'MCH',
+        label: '平均红细胞血红蛋白含量(pg)'
+    },
+    {
+        value: 'MCHC',
+        label: '平均红细胞(g/L)'
+    },
+    {
+        value: 'ALT',
+        label: '谷丙转氨酶(U/L)'
+    },
+    {
+        value: 'AST',
+        label: '谷草转氨酶(U/L)'
+    },
+    {
+        value: 'STP',
+        label: '血清总蛋白(g/L)'
+    },
+    {
+        value: 'A',
+        label: '清蛋白(g/L)'
+    },
+    {
+        value: 'G',
+        label: '球蛋白(g/L)'
+    },
+    {
+        value: 'PAB',
+        label: '前清蛋白(mg/L)'
+    },
+    {
+        value: 'TC',
+        label: '总胆固醇(mmol/L)'
+    },
+    {
+        value: 'STB',
+        label: '总胆红素(μmol/L)'
+    },
+    {
+        value: 'CB',
+        label: '结合胆红素(μmol/L)'
+    },
+    {
+        value: 'UCB',
+        label: '非结合胆红素(μmol/L)'
+    },
+    {
+        value: 'Cr',
+        label: '血清肌酐(mmol/L)'
+    },
+    {
+        value: 'Ccr',
+        label: '内生肌酐清除率(ml/min)'
+    },
+    {
+        value: 'BUN',
+        label: '血尿素氮(mmol/L)'
+    },
+    {
+        value: 'K+',
+        label: '血钾(mmol/L)'
+    },
+    {
+        value: 'Na+',
+        label: '血钠(mmol/L)'
+    },
+    {
+        value: 'Ca+',
+        label: '血钙(mmol/L)'
+    },
+    {
+        value: 'Cl-',
+        label: '血氯(mmol/L)'
+    },
+    {
+        value: 'P2-',
+        label: '血无机磷(mmol/L)'
+    },
+    {
+        value: 'Glu',
+        label: '空腹血糖(mmol/L)'
+    }
+]
+
 export {
     ages,
     options,
-    foodNames
+    foodNames,
+    bioOptions
 }

@@ -5,12 +5,15 @@
       <span @click="editRules(item)"><b>{{ item.name.split("_")[1] }}</b></span>
       <el-button @click="deleteRule(item)" style="float: right;" size="mini" type="danger" icon="el-icon-delete"></el-button>
     </el-card>
+    <div v-if="items.length === 0">
+      此用户还未定义规则，点击左下角按钮新建规则吧！
+    </div>
     <el-button class="select_top_button" type="danger" @click="exit">退出系统</el-button>
     <el-button class="select_left_button" @click="addRules">添加规则</el-button>
 
 
     <el-dialog title="规则编辑" :visible.sync="dialogFormVisible">
-      <el-input v-model="ruleName"></el-input>
+      <el-input v-model="ruleName" placeholder="请输入规则名称"></el-input>
       <div slot="footer" class="dialog-footer">
         <el-button @click="dialogFormVisible = false">取 消</el-button>
         <el-button type="primary" @click="submitRules">确 定</el-button>
@@ -69,8 +72,9 @@ export default {
       this.dialogFormVisible = true;
     },
     submitRules() {
-      this.dialogFormVisible = false
-      this.$router.push({path: '/Editor', query: {ruleName: this.ruleName.split("_")[1]}});
+      this.dialogFormVisible = false;
+      this.xmlStr.xmlStr = this.xmlStr.xmlOrigin;
+      this.$router.push({path: '/Editor', query: {ruleName: this.ruleName}});
     },
     editRules(item) {
       this.$axios.get(`drools/drl/bpmns`, {

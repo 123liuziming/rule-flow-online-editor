@@ -3,7 +3,7 @@
     <div class="canvas" ref="canvas"></div>
     <properties-view v-if="bpmnModeler" :modeler="bpmnModeler"></properties-view>
     <div style="text-align: center">
-      <el-button @click="uploadDrl">上传</el-button>
+      <el-button type="primary" @click="uploadDrl">上传</el-button>
     </div>
     <el-button class="select_top_button" type="danger" @click="exit">退出系统</el-button>
   </div>
@@ -14,7 +14,6 @@
 // import BpmnViewer from 'bpmn-js'
 import BpmnModeler from 'bpmn-js/lib/Modeler'
 import PropertiesView from './custom-properties-panel/PropertiesView'
-import {options} from "../assets/js/condition";
 import state from "../assets/js/MyStorage"
 
 export default {
@@ -47,54 +46,61 @@ export default {
       this.$router.push('/');
     },
     uploadDrl() {
-      console.log("xml");
-      console.log(this.xml);
-      let parser = new DOMParser();
-      let xmlDoc = parser.parseFromString(this.xml, "text/xml");
-      let sequences = xmlDoc.getElementsByTagName("sequenceFlow");
-      let gateWayAttribute = new Map();
-      for (let i = 0; i < sequences.length; ++i) {
-        let key = sequences[i].getAttribute("sourceRef") + "," + sequences[i].getAttribute("targetRef");
-        gateWayAttribute.set(key, sequences[i]);
-      }
-      // 限定开始节点只有一个
-      let startNode = xmlDoc.getElementsByTagName("startEvent")[0];
-      let tasks = xmlDoc.getElementsByTagName("task");
-      let taskAttribute = new Map();
-      for (let i = 0; i < tasks.length; ++i) {
-        taskAttribute.set(tasks[i].getAttribute("id"), tasks[i]);
-      }
-      let edges = xmlDoc.getElementsByTagName("sequenceFlow");
-      console.log("edges", edges);
-      let linkedMap = new Map();
-      for (let i = 0; i < edges.length; ++i) {
-        let edge = edges[i];
-        let from = edge.getAttribute("sourceRef");
-        let to = edge.getAttribute("targetRef");
-        if (!linkedMap.has(from)) {
-          linkedMap.set(from, []);
+      try {
+        console.log("xml");
+        console.log(this.xml);
+        let parser = new DOMParser();
+        let xmlDoc = parser.parseFromString(this.xml, "text/xml");
+        let sequences = xmlDoc.getElementsByTagName("sequenceFlow");
+        let gateWayAttribute = new Map();
+        for (let i = 0; i < sequences.length; ++i) {
+          let key = sequences[i].getAttribute("sourceRef") + "," + sequences[i].getAttribute("targetRef");
+          gateWayAttribute.set(key, sequences[i]);
         }
-        let val = linkedMap.get(from);
-        val.push(to);
-        linkedMap.set(from, val);
-      }
-      console.log("linked map ", linkedMap);
-      let result = [];
-      this.dfs(linkedMap, result, [], startNode.getAttribute("id"));
-      let ruleName = this.ruleName = this.$route.query.ruleName;
-      let script = this.generateDrlScript(ruleName, result, gateWayAttribute, taskAttribute);
-      let data = new FormData();
-      data.append('droolStr', script);
-      data.append('id', ruleName);
-      data.append("xml", this.xml);
-      data.append("account", state.getItem("login"));
-      this.$axios.post(`drools/drl/upload`, data).then(res => {
-        this.$notify({
-          title: '成功',
-          message: '成功添加规则',
-          type: 'success'
+        // 限定开始节点只有一个
+        let startNode = xmlDoc.getElementsByTagName("startEvent")[0];
+        let tasks = xmlDoc.getElementsByTagName("task");
+        let taskAttribute = new Map();
+        for (let i = 0; i < tasks.length; ++i) {
+          taskAttribute.set(tasks[i].getAttribute("id"), tasks[i]);
+        }
+        let edges = xmlDoc.getElementsByTagName("sequenceFlow");
+        console.log("edges", edges);
+        let linkedMap = new Map();
+        for (let i = 0; i < edges.length; ++i) {
+          let edge = edges[i];
+          let from = edge.getAttribute("sourceRef");
+          let to = edge.getAttribute("targetRef");
+          if (!linkedMap.has(from)) {
+            linkedMap.set(from, []);
+          }
+          let val = linkedMap.get(from);
+          val.push(to);
+          linkedMap.set(from, val);
+        }
+        console.log("linked map ", linkedMap);
+        let result = [];
+        this.dfs(linkedMap, result, [], startNode.getAttribute("id"));
+        let ruleName = this.ruleName = this.$route.query.ruleName;
+        let script = this.generateDrlScript(ruleName, result, gateWayAttribute, taskAttribute);
+        let data = new FormData();
+        data.append('droolStr', script);
+        data.append('id', ruleName);
+        data.append("xml", this.xml);
+        data.append("account", state.getItem("login"));
+        this.$axios.post(`drools/drl/upload`, data).then(res => {
+          this.$notify({
+            title: '成功',
+            message: '成功添加规则',
+            type: 'success'
+          });
+        })
+      } catch (e) {
+        this.$notify.error({
+          title: '错误',
+          message: '规则有误'
         });
-      })
+      }
     },
 
     generateDrlScript(ruleName, graph, gateWayAttribute, taskAttribute) {
@@ -228,8 +234,7 @@ export default {
       })
       this.createNewDiagram()
     },
-    createNewDiagram() {
-      // 将字符串转换成图显示出来
+    importXml() {
       this.bpmnModeler.importXML(this.xmlStr.xmlStr, err => {
         if (err) {
           // console.error(err)
@@ -240,6 +245,30 @@ export default {
         }
       })
     },
+    createNewDiagram() {
+      // 将字符串转换成图显示出来
+      console.log("xml is :" + this.xmlStr.xmlStr);
+      if (this.xmlStr.xmlStr !== '') {
+        this.xml = this.xmlStr.xmlStr;
+        this.importXml();
+      }
+      else {
+        this.$axios.get(`drools/drl/bpmns`, {
+          params: {
+            id: state.getItem("login") + "_" + this.$route.query.ruleName
+          }
+        }).then(res => {
+          if (res.data !== "fail") {
+            this.xmlStr.xmlStr = res.data;
+            console.log("xml is :" + this.xmlStr.xmlStr);
+            this.importXml();
+          }
+          else {
+            this.$router.push({path: '/Index'})
+          }
+        })
+      }
+    },
     success() {
       // 给图绑定事件，当图有发生改变就会触发这个事件
       const that = this
@@ -247,6 +276,7 @@ export default {
         that.saveDiagram(function (err, xml) {
           console.log(xml);
           that.xml = xml;
+          that.xmlStr.xmlStr = xml;
           let edits = document.getElementsByClassName('djs-direct-editing-content')
           for (let i = 0; i < edits.length; ++i) {
             edits[i].style.display = "none"

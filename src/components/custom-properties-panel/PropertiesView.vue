@@ -1,6 +1,6 @@
 <template>
   <div class="custom-properties-panel">
-    <div class="empty" v-if="selectedElements.length <= 0">请选择一个元素</div>
+    <div class="empty" v-if="selectedElements.length <= 0" style="text-align: center"></div>
     <div class="empty" v-else-if="selectedElements.length > 1">只能选择一个元素</div>
     <div v-else>
       <fieldset class="element-item">
@@ -21,46 +21,17 @@
       </fieldset>
       <fieldset class="element-item"
                 v-if="element.type === 'bpmn:SequenceFlow' && element.businessObject.sourceRef.$type === 'bpmn:ExclusiveGateway'">
-        <label>营养元素判定</label>
-        <el-form v-model="element.conditions" ref="element.conditions">
-          <div>
-            {{element.conditions}}
-          </div>
-          <el-form-item
-              v-for="(domain, index) in element.conditions"
-              :label="'元素' + index"
-              :key="index"
-              :rules="{required: true, message: '元素不能为空', trigger: 'blur'}">
-            <div style="display: flex">
-              <el-select v-model="domain.nutrition" @change="onConditionChange(element)" placeholder="请选择">
-                <el-option
-                    v-for="item in options"
-                    :key="item.value"
-                    :label="item.label"
-                    :value="item.value">
-                </el-option>
-              </el-select>
-              <el-input
-                  style="width: 20%; margin-left: 5%"
-                  placeholder="元素最小值"
-                  v-model="domain.left"
-                  clearable>
-              </el-input>
-              <el-input
-                  style="width: 20%; margin-left: 5%"
-                  placeholder="元素最大值"
-                  v-model="domain.right"
-                  clearable>
-              </el-input>
-              <el-button style="margin-left: 3%" @click.prevent="removeDomain(element, domain)">删除</el-button>
-            </div>
-          </el-form-item>
-          <el-form-item>
-            <el-button @click="addDomain(element)">新增元素</el-button>
-          </el-form-item>
-        </el-form>
-        <div>
-          <label>患者身体状况</label>
+        <div style="display: flex">
+          <div><b>性别:</b></div>
+          <el-radio style="margin-top: 5px" @change="onConditionChange(element)" v-model="element.sex"
+                    label="Sex.MALE">男
+          </el-radio>
+          <el-radio style="margin-top: 5px" @change="onConditionChange(element)" v-model="element.sex"
+                    label="Sex.FEMALE">女
+          </el-radio>
+        </div>
+        <div style="margin-top: 2%">
+          <label>患者年龄</label>
           <el-select v-model="element.age" placeholder="请选择" @change="onConditionChange(element)">
             <el-option
                 v-for="item in ages"
@@ -69,23 +40,92 @@
                 :value="item.value">
             </el-option>
           </el-select>
-          <div style="display: flex">
-            <div><b>性别:</b></div>
-            <el-radio style="margin-top: 5px" @change="onConditionChange(element)" v-model="element.sex"
-                      label="Sex.MALE">男
-            </el-radio>
-            <el-radio style="margin-top: 5px" @change="onConditionChange(element)" v-model="element.sex"
-                      label="Sex.FEMALE">女
-            </el-radio>
-          </div>
-          <div v-if="element.sex === 'women'">
-            <div><b>是否是孕妇:</b></div>
-            <el-radio @change="onConditionChange(element)" v-model="element.pregnant" label="true">是
-            </el-radio>
-            <el-radio @change="onConditionChange(element)" v-model="element.pregnant" label="false">否
-            </el-radio>
-          </div>
         </div>
+        <div v-if="element.sex === 'women'">
+          <div><b>是否是孕妇:</b></div>
+          <el-radio @change="onConditionChange(element)" v-model="element.pregnant" label="true">是
+          </el-radio>
+          <el-radio @change="onConditionChange(element)" v-model="element.pregnant" label="false">否
+          </el-radio>
+        </div>
+
+        <div style="margin-top: 2%">
+          <label>营养元素判定</label>
+          <el-form v-model="element.conditions" ref="element.conditions">
+            <el-form-item
+                v-for="(domain, index) in element.conditions"
+                :label="'元素' + index"
+                :key="index"
+                style="margin-top: 2%"
+                :rules="{required: true, message: '元素不能为空', trigger: 'blur'}">
+              <div style="display: flex;">
+                <el-select v-model="domain.nutrition" @change="onConditionChange(element)" placeholder="请选择">
+                  <el-option
+                      v-for="item in options"
+                      :key="item.value"
+                      :label="item.label"
+                      :value="item.value">
+                  </el-option>
+                </el-select>
+                <el-input
+                    style="width: 20%; margin-left: 5%"
+                    placeholder="元素最小值"
+                    v-model="domain.left"
+                    clearable>
+                </el-input>
+                <el-input
+                    style="width: 20%; margin-left: 5%"
+                    placeholder="元素最大值"
+                    v-model="domain.right"
+                    clearable>
+                </el-input>
+                <el-button style="margin-left: 3%" @click.prevent="removeDomain(element, domain, false)">删除</el-button>
+              </div>
+            </el-form-item>
+            <el-form-item style="text-align: center">
+              <el-button size="mini" type="warning" @click="addDomain(element, false)">新增元素</el-button>
+            </el-form-item>
+          </el-form>
+        </div>
+        <div style="margin-top: 10px">
+          <label>生物指标判定</label>
+          <el-form v-model="element.bioConditions" ref="element.bioConditions">
+            <el-form-item
+                v-for="(domain, index) in element.bioConditions"
+                :label="'指标' + index"
+                :key="index"
+                style="margin-top: 2%"
+                :rules="{required: true, message: '元素不能为空', trigger: 'blur'}">
+              <div style="display: flex">
+                <el-select v-model="domain.nutrition" @change="onConditionChange(element)" placeholder="请选择">
+                  <el-option
+                      v-for="item in bioOptions"
+                      :key="item.value"
+                      :label="item.label"
+                      :value="item.value">
+                  </el-option>
+                </el-select>
+                <el-input
+                    style="width: 20%; margin-left: 5%"
+                    placeholder="指标最小值"
+                    v-model="domain.left"
+                    clearable>
+                </el-input>
+                <el-input
+                    style="width: 20%; margin-left: 5%"
+                    placeholder="指标最大值"
+                    v-model="domain.right"
+                    clearable>
+                </el-input>
+                <el-button style="margin-left: 3%" @click.prevent="removeDomain(element, domain, true)">删除</el-button>
+              </div>
+            </el-form-item>
+            <el-form-item style="text-align: center">
+              <el-button size="mini" type="warning" @click="addDomain(element, true)">新增元素</el-button>
+            </el-form-item>
+          </el-form>
+        </div>
+
       </fieldset>
     </div>
   </div>
@@ -95,7 +135,8 @@
 import {
   ages,
   options,
-  foodNames
+  foodNames,
+  bioOptions
 } from "../../assets/js/condition";
 
 export default {
@@ -112,6 +153,7 @@ export default {
       props: {multiple: true},
       ages: ages,
       options: options,
+      bioOptions: bioOptions,
       nodeName: "",
       selectedElements: [],
       // key是element,value是选中的元素
@@ -126,18 +168,32 @@ export default {
   },
 
   methods: {
-    addDomain(element) {
-      if (!element.conditions) {
-        this.$set(element, "conditions", []);
+    addDomain(element, flag) {
+      if (!flag) {
+        if (!element.conditions) {
+          this.$set(element, "conditions", []);
+        }
+        this.$set(element.conditions, element.conditions.length, {nutrition: '', left: "-INF", right: "INF"});
+      } else {
+        if (!element.bioConditions) {
+          this.$set(element, "bioConditions", []);
+        }
+        this.$set(element.bioConditions, element.bioConditions.length, {nutrition: '', left: "-INF", right: "INF"});
       }
-      this.$set(element.conditions, element.conditions.length, {nutrition: '', left: "-INF", right: "INF"});
       //element.conditions.push({nutrition: '', range: [0, 10]});
       this.onConditionChange(element);
     },
-    removeDomain(element, item) {
-      var index = element.conditions.indexOf(item)
-      if (index !== -1) {
-        element.conditions.splice(index, 1)
+    removeDomain(element, item, flag) {
+      if (!flag) {
+        let index = element.conditions.indexOf(item)
+        if (index !== -1) {
+          element.conditions.splice(index, 1)
+        }
+      } else {
+        let index = element.bioConditions.indexOf(item)
+        if (index !== -1) {
+          element.bioConditions.splice(index, 1)
+        }
       }
       this.onConditionChange(element);
     },
@@ -157,6 +213,7 @@ export default {
       this.changeField(null, "conditionAge", element.age);
       this.changeField(null, "conditionSex", element.sex);
       this.changeField(null, "conditionNutrition", JSON.stringify(element.conditions));
+      this.changeField(null, "conditionBio", JSON.stringify(element.bioConditions));
     },
     clear() {
       let classes = [
@@ -177,6 +234,7 @@ export default {
         this.element = e.newSelection[0];
         console.log("element changed", this.element);
         console.log(this.xmlStr.xmlStr);
+
         if (this.element) {
           if (!this.element.sex && this.element.businessObject.$attrs.conditionSex) {
             this.element.sex = this.element.businessObject.$attrs.conditionSex;
@@ -186,6 +244,9 @@ export default {
           }
           if (!this.element.conditions && this.element.businessObject.$attrs.conditionNutrition) {
             this.$set(this.element, "conditions", JSON.parse(this.element.businessObject.$attrs.conditionNutrition.replaceAll("&#34;", "")));
+          }
+          if (!this.element.bioConditions && this.element.businessObject.$attrs.conditionBio) {
+            this.$set(this.element, "bioConditions", JSON.parse(this.element.businessObject.$attrs.conditionBio.replaceAll("&#34;", "")));
           }
           if (!this.element.selectedData && this.element.businessObject.$attrs.foodIdxs) {
             let indexs = this.element.businessObject.$attrs.foodIdxs.split(",");
