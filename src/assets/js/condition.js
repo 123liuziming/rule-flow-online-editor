@@ -43179,23 +43179,23 @@ const bioOptions = [
         label: '血尿素氮(mmol/L)'
     },
     {
-        value: 'K+',
+        value: 'KP',
         label: '血钾(mmol/L)'
     },
     {
-        value: 'Na+',
+        value: 'NaP',
         label: '血钠(mmol/L)'
     },
     {
-        value: 'Ca+',
+        value: 'CaP',
         label: '血钙(mmol/L)'
     },
     {
-        value: 'Cl-',
+        value: 'ClN',
         label: '血氯(mmol/L)'
     },
     {
-        value: 'P2-',
+        value: 'P2N',
         label: '血无机磷(mmol/L)'
     },
     {
