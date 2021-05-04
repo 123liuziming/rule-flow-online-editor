@@ -169,6 +169,42 @@ export default {
             nutritionCondition = nutritionCondition.slice(0, -4);
           }
         }
+
+        try {
+          var bioJson = JSON.parse(val.getAttribute("conditionBio").replaceAll("&#34;", ""));
+        } catch (e) {
+          conditionJson = null;
+        }
+        let bioCondition = "";
+        if (bioJson) {
+          for (let condition of bioJson) {
+            let nutrition = condition["nutrition"];
+            if (nutrition === "") {
+              continue;
+            }
+            let left = condition["left"];
+            let right = condition["right"];
+            if (left === '-INF' && right === 'INF') {
+              continue;
+            }
+            if (left !== "-INF") {
+              bioCondition += ("$user." + nutrition)
+              bioCondition += (" >= " + left + " && ");
+            }
+            if (right !== "INF") {
+              bioCondition += ("$user." + nutrition)
+              bioCondition += (" <= " + right + " && ");
+            }
+          }
+        }
+        if (bioCondition) {
+          bioCondition = this.replaceXml(bioCondition);
+          if (bioCondition.endsWith(" && ")) {
+            bioCondition = bioCondition.slice(0, -4);
+          }
+        }
+
+
         if (ageCondition) {
           result += (ageCondition + " && ");
         }
@@ -178,8 +214,11 @@ export default {
         if (nutritionCondition && nutritionCondition.length) {
           result += (nutritionCondition + " && ");
         }
+        if (bioCondition && bioCondition.length) {
+          result += (bioCondition + " && ");
+        }
         console.log("condition is below ");
-        console.log(ageCondition, sexCondition, nutritionCondition);
+        console.log(nutritionCondition);
       }
       if (result.endsWith(" && ")) {
         result = result.slice(0, -4);
